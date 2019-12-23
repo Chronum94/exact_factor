@@ -16,18 +16,18 @@
 // Here dot product represents inner product on vector space, hence the conjugate
 // Concerning that the OpenMP part here doesn't seem to lead to more core usage, need better profiling!
 dcomp  dot_product( vector< dcomp  > &v1, vector<dcomp> &v2, int &l){
-	dcomp sum = 0.;
-	vector<dcomp> par_sum;
-	par_sum.resize(n_threads);
-	#pragma omp parallel for
+// 	dcomp sum = 0.;
+// 	vector<dcomp> par_sum;
+// 	par_sum.resize(n_threads);
+	#pragma omp parallel for reduction(+:sum)
 	for(int i = 0; i<l;i++){
-		int id = omp_get_thread_num();
-		par_sum[ id ] += conj( v1[i] )*v2[i];
+		// int id = omp_get_thread_num();
+		sum += conj( v1[i] )*v2[i];
 	}
 	
 	//do serial summation of parallel bits
-	for(int c = 0;c<n_threads; c++){
-		sum += par_sum[c];
+// 	for(int c = 0;c<n_threads; c++){
+// 		sum += par_sum[c];
 	}
 	
 	return sum;
